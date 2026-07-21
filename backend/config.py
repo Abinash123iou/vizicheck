@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     # Database Configuration
     DATABASE_URL: str
 
+    # Default Super Admin Account
+    DEFAULT_SUPER_ADMIN_EMAIL: str = "admin@vizicheck.com"
+    DEFAULT_SUPER_ADMIN_PASSWORD: str = "Admin@123"
+
     # JWT Authentication Configuration
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"

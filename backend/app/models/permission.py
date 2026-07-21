@@ -4,17 +4,17 @@ from sqlalchemy import String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.base import Base
 
-class Role(Base):
-    __tablename__ = "roles"
+class Permission(Base):
+    __tablename__ = "permissions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    code: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
     description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now(), nullable=True)
 
     # Relationships
-    users: Mapped[List["User"]] = relationship(back_populates="role")
-    permissions: Mapped[List["Permission"]] = relationship(
-        secondary="role_permissions", back_populates="roles"
+    roles: Mapped[List["Role"]] = relationship(
+        secondary="role_permissions", back_populates="permissions"
     )

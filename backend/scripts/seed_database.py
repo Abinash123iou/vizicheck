@@ -6,19 +6,14 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
-
 from config import settings
 from database.session import SessionLocal
 from app.models.role import Role
 from app.models.permission import Permission
 from app.models.user import User
+from app.core.password import hash_password
 
-# Password hashing context using bcrypt
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
 
 # Define system roles
 ROLES = [

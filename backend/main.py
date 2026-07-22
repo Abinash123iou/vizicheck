@@ -8,6 +8,8 @@ from config import settings
 from database.session import SessionLocal
 from app.core.exceptions import ViziCheckException
 from app.middleware.logging import LoggingMiddleware
+from app.middleware.auth import AuthenticationMiddleware
+from app.api.routes.auth import router as auth_router
 from app.utils.logger import get_logger
 
 # Initialize logger
@@ -22,8 +24,9 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Register logging middleware
+# Register middlewares
 app.add_middleware(LoggingMiddleware)
+app.add_middleware(AuthenticationMiddleware)
 
 # Register CORS middleware
 if settings.BACKEND_CORS_ORIGINS:
@@ -44,12 +47,14 @@ async def vizicheck_exception_handler(request: Request, exc: ViziCheckException)
     Returns custom JSON error envelope.
     """
     logger.warning(f"Business Exception: {exc.message} | Status: {exc.status_code}")
+    errors = exc.errors if exc.errors else [exc.message]
     return JSONResponse(
         status_code=exc.status_code,
         content={
             "success": False,
             "message": exc.message,
-            "errors": exc.errors
+            "data": None,
+            "errors": errors
         }
     )
 
@@ -71,11 +76,15 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={
             "success": False,
             "message": "Validation failed",
+            "data": None,
             "errors": errors
         }
     )
 
 # --- Routes ---
+
+# Register API v1 authentication router
+app.include_router(auth_router, prefix=settings.API_V1_STR)
 
 @app.get("/health")
 def health_check():
@@ -101,5 +110,7 @@ def health_check():
             "project": settings.PROJECT_NAME,
             "version": settings.VERSION,
             "database": db_status
-        }
+        },
+        "errors": None
     }
+

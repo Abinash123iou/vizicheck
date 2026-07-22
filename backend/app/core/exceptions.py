@@ -56,3 +56,32 @@ class BusinessRuleException(ViziCheckException):
     """
     def __init__(self, message: str, errors: Optional[List[Any]] = None):
         super().__init__(message, status_code=400, errors=errors)
+
+class UserInactiveException(AuthenticationException):
+    """
+    Exception raised when a user account is inactive or disabled (HTTP 401).
+    """
+    def __init__(self, message: str = "User account is inactive or disabled", errors: Optional[List[Any]] = None):
+        super().__init__(message, errors=errors)
+
+class TenantInactiveException(AuthorizationException):
+    """
+    Exception raised when a tenant organization is inactive or suspended (HTTP 403).
+    """
+    def __init__(self, message: str = "Tenant organization is inactive or suspended", errors: Optional[List[Any]] = None):
+        super().__init__(message, errors=errors)
+
+class InvalidTokenException(AuthenticationException):
+    """
+    Exception raised when a JWT token signature or claim is invalid (HTTP 401).
+    """
+    def __init__(self, message: str = "Invalid or malformed authentication token", errors: Optional[List[Any]] = None):
+        super().__init__(message, errors=errors)
+
+class ExpiredTokenException(AuthenticationException):
+    """
+    Exception raised when a JWT token has expired (HTTP 401).
+    """
+    def __init__(self, message: str = "Authentication token has expired", errors: Optional[List[Any]] = None):
+        super().__init__(message, errors=errors)
+

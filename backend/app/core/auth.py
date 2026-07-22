@@ -12,8 +12,17 @@ oauth2_scheme = OAuth2PasswordBearer(
 def extract_token_from_header(request: Request) -> Optional[str]:
     """
     Extract Authorization Bearer token from Request headers.
+    Supports case-insensitive header lookup and handles extra 'Bearer' prefixes.
     """
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
+    auth_header = request.headers.get("Authorization") or request.headers.get("authorization")
+    if not auth_header:
         return None
-    return auth_header.split(" ", 1)[1].strip()
+    
+    parts = auth_header.strip().split()
+    if not parts:
+        return None
+    
+    # Extract token part safely
+    token = parts[-1].strip()
+    return token
+

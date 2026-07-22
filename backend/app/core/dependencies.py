@@ -1,10 +1,10 @@
 from typing import Generator, Optional
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
 from database.session import SessionLocal
 from app.models.user import User
-from app.core.auth import oauth2_scheme
+from app.core.auth import oauth2_scheme, extract_token_from_header
 from app.core.jwt import decode_token
 from app.core.exceptions import (
     AuthenticationException, 
@@ -27,6 +27,7 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 def get_current_user(
+    request: Request,
     db: Session = Depends(get_db),
     token: Optional[str] = Depends(oauth2_scheme)
 ) -> User:
@@ -35,13 +36,23 @@ def get_current_user(
     and returns the authenticated user entity.
     """
     if not token:
+        token = extract_token_from_header(request)
+
+    if not token:
         raise AuthenticationException("Authentication required. Missing Authorization header")
+
+    # Sanitize token string if duplicate 'Bearer' prefix was included
+    if token.startswith("Bearer "):
+        token = token.replace("Bearer ", "").strip()
+    elif token.startswith("bearer "):
+        token = token.replace("bearer ", "").strip()
 
     payload = decode_token(token)
 
     # Enforce access token type
     if payload.get("token_type") != "access":
         raise InvalidTokenException("Invalid token type. Access token required")
+
 
     sub = payload.get("sub")
     if not sub:

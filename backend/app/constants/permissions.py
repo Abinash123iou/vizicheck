@@ -1,0 +1,14 @@
+class Permissions:
+    """
+    Constants for system permission codes.
+    """
+    USER_CREATE = "USER_CREATE"
+    USER_READ = "USER_READ"
+    USER_UPDATE = "USER_UPDATE"
+    USER_DELETE = "USER_DELETE"
+    USER_RESTORE = "USER_RESTORE"
+    USER_MANAGE_STATUS = "USER_MANAGE_STATUS"
+    USER_RESET_PASSWORD = "USER_RESET_PASSWORD"
+    
+    PROFILE_VIEW = "PROFILE_VIEW"
+    PROFILE_UPDATE = "PROFILE_UPDATE"

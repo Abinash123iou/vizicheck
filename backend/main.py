@@ -10,6 +10,8 @@ from app.core.exceptions import ViziCheckException
 from app.middleware.logging import LoggingMiddleware
 from app.middleware.auth import AuthenticationMiddleware
 from app.api.routes.auth import router as auth_router
+from app.api.routes.users import router as users_router
+from app.api.routes.profile import router as profile_router
 from app.utils.logger import get_logger
 
 # Initialize logger
@@ -83,8 +85,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 # --- Routes ---
 
-# Register API v1 authentication router
+# Register API v1 routers
 app.include_router(auth_router, prefix=settings.API_V1_STR)
+app.include_router(users_router, prefix=settings.API_V1_STR)
+app.include_router(profile_router, prefix=settings.API_V1_STR)
 
 @app.get("/health")
 def health_check():

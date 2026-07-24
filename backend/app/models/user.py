@@ -25,5 +25,6 @@ class User(Base, SoftDeleteMixin):
 
     # Relationships
     role: Mapped["Role"] = relationship(back_populates="users")
-    tenant: Mapped[Optional["Tenant"]] = relationship(back_populates="users")
+    tenant: Mapped[Optional["Tenant"]] = relationship(back_populates="users", foreign_keys=[tenant_id])
     audit_logs: Mapped[List["AuditLog"]] = relationship(back_populates="user")
+

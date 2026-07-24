@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.models.audit_log import AuditLog
 
@@ -36,3 +36,19 @@ class AuditRepository:
         db.commit()
         db.refresh(audit_log)
         return audit_log
+
+    @staticmethod
+    def get_entity_activity_timeline(
+        db: Session,
+        module: str,
+        entity_id: int,
+        limit: int = 50
+    ) -> List[AuditLog]:
+        """
+        Retrieve audit log history for a specific module entity (e.g. tenant activity timeline).
+        """
+        return db.query(AuditLog).filter(
+            AuditLog.module == module,
+            AuditLog.entity_id == entity_id
+        ).order_by(AuditLog.created_at.desc()).limit(limit).all()
+

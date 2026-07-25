@@ -2,6 +2,7 @@ from typing import List, Union
 from fastapi import Depends
 from app.models.user import User
 from app.core.exceptions import AuthorizationException
+from app.core.dependencies import get_current_active_user
 
 class SystemRoles:
     SUPER_ADMIN = "SUPER_ADMIN"
@@ -17,7 +18,7 @@ class PermissionChecker:
     def __init__(self, required_permission: str):
         self.required_permission = required_permission
 
-    def __call__(self, current_user: User) -> User:
+    def __call__(self, current_user: User = Depends(get_current_active_user)) -> User:
         if not current_user or not current_user.role:
             raise AuthorizationException("User role not assigned or authenticated")
 
@@ -42,7 +43,7 @@ class RoleChecker:
         else:
             self.allowed_roles = allowed_roles
 
-    def __call__(self, current_user: User) -> User:
+    def __call__(self, current_user: User = Depends(get_current_active_user)) -> User:
         if not current_user or not current_user.role:
             raise AuthorizationException("User role not assigned or authenticated")
 
@@ -51,6 +52,7 @@ class RoleChecker:
                 f"Access denied. Allowed roles: {', '.join(self.allowed_roles)}"
             )
         return current_user
+
 
 def has_permission(required_permission: str):
     """

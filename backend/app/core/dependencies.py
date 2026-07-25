@@ -11,7 +11,7 @@ from app.core.exceptions import (
     AuthorizationException,
     InvalidTokenException
 )
-from app.core.permissions import SystemRoles
+# Roles check helper
 from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthService
 
@@ -85,6 +85,7 @@ def get_current_super_admin(
     """
     Dependency verifying that current user has SUPER_ADMIN role.
     """
+    from app.core.permissions import SystemRoles
     if not current_user.role or current_user.role.name != SystemRoles.SUPER_ADMIN:
         raise AuthorizationException("Action requires Super Admin privileges")
     return current_user
@@ -95,6 +96,7 @@ def get_current_tenant_admin(
     """
     Dependency verifying that current user has TENANT_ADMIN or SUPER_ADMIN role.
     """
+    from app.core.permissions import SystemRoles
     allowed_roles = [SystemRoles.SUPER_ADMIN, SystemRoles.TENANT_ADMIN]
     if not current_user.role or current_user.role.name not in allowed_roles:
         raise AuthorizationException("Action requires Tenant Admin privileges")
@@ -106,6 +108,7 @@ def get_current_security_officer(
     """
     Dependency verifying that current user has SECURITY_OFFICER, TENANT_ADMIN, or SUPER_ADMIN role.
     """
+    from app.core.permissions import SystemRoles
     allowed_roles = [
         SystemRoles.SUPER_ADMIN, 
         SystemRoles.TENANT_ADMIN, 
@@ -114,3 +117,4 @@ def get_current_security_officer(
     if not current_user.role or current_user.role.name not in allowed_roles:
         raise AuthorizationException("Action requires Security Officer privileges")
     return current_user
+

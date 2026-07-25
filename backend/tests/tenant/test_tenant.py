@@ -46,6 +46,17 @@ def test_create_tenant_success():
     token = get_super_admin_token()
     headers = {"Authorization": f"Bearer {token}"}
 
+    # Pre-test cleanup
+    db = SessionLocal()
+    t = db.query(Tenant).filter((Tenant.name == "Acme Corp") | (Tenant.slug == "acme-corp") | (Tenant.domain == "acme.vizicheck.com")).first()
+    if t:
+        db.query(TenantSettings).filter_by(tenant_id=t.id).delete()
+        db.query(Tenant).filter_by(id=t.id).delete()
+        db.commit()
+    db.close()
+
+
+
     payload = {
         "name": "Acme Corp",
         "slug": "acme-corp",
@@ -307,9 +318,17 @@ def test_tenant_isolation_and_rbac_restrictions():
     Test Tenant Admin cannot create/delete tenants or view another tenant's details.
     """
     db = SessionLocal()
+    old_t = db.query(Tenant).filter((Tenant.name == "Tenant Isolation Corp") | (Tenant.code == "TEN-999999")).first()
+    if old_t:
+        db.query(User).filter_by(tenant_id=old_t.id).delete()
+        db.query(TenantSettings).filter_by(tenant_id=old_t.id).delete()
+        db.query(Tenant).filter_by(id=old_t.id).delete()
+        db.commit()
+
     try:
         # Create test tenant and user
         tenant_org = Tenant(name="Tenant Isolation Corp", code="TEN-999999", contact_person="Admin", contact_email="admin@iso.com", status=TenantStatus.ACTIVE)
+
         db.add(tenant_org)
         db.flush()
 
@@ -364,8 +383,16 @@ def test_delete_safety_checks():
     Test deleting active tenant with active users is blocked (HTTP 400 BusinessRuleException).
     """
     db = SessionLocal()
+    old_t = db.query(Tenant).filter((Tenant.name == "Safety Tenant") | (Tenant.code == "TEN-888888")).first()
+    if old_t:
+        db.query(User).filter_by(tenant_id=old_t.id).delete()
+        db.query(TenantSettings).filter_by(tenant_id=old_t.id).delete()
+        db.query(Tenant).filter_by(id=old_t.id).delete()
+        db.commit()
+
     try:
         tenant_org = Tenant(name="Safety Tenant", code="TEN-888888", contact_person="Owner", contact_email="owner@safety.com", status=TenantStatus.ACTIVE)
+
         db.add(tenant_org)
         db.flush()
 

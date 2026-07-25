@@ -5,6 +5,7 @@ from app.models.tenant import Tenant, TenantStatus
 from app.models.tenant_settings import TenantSettings
 from app.models.user import User
 from app.models.audit_log import AuditLog
+from app.models.visitor import Visitor, VisitorStatus, VerificationStatus, VerificationMethod
 
 __all__ = [
     "Role",
@@ -14,6 +15,9 @@ __all__ = [
     "TenantStatus",
     "TenantSettings",
     "User",
-    "AuditLog"
+    "AuditLog",
+    "Visitor",
+    "VisitorStatus",
+    "VerificationStatus",
+    "VerificationMethod"
 ]
-

@@ -13,10 +13,12 @@ from app.api.routes.auth import router as auth_router
 from app.api.routes.users import router as users_router
 from app.api.routes.profile import router as profile_router
 from app.api.routes.tenants import router as tenants_router
+from app.api.routes.visitors import router as visitors_router
 from app.utils.logger import get_logger
 
 # Initialize logger
 logger = get_logger("main")
+
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -91,6 +93,8 @@ app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(profile_router, prefix=settings.API_V1_STR)
 app.include_router(tenants_router, prefix=settings.API_V1_STR)
+app.include_router(visitors_router, prefix=settings.API_V1_STR)
+
 
 
 @app.get("/health")

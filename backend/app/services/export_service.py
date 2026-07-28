@@ -1,6 +1,6 @@
 import csv
 import io
-from typing import List
+from typing import List, Any
 from app.models.visitor import Visitor
 
 class ExportService:
@@ -91,6 +91,61 @@ class ExportService:
         return output.getvalue()
 
     @staticmethod
+    def export_requests_csv(requests: List[Any]) -> str:
+        """
+        Generate downloadable CSV data string for a list of VisitRequest records.
+        """
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
+
+        writer.writerow([
+            "Request ID",
+            "Request Code",
+            "Tenant ID",
+            "Visitor ID",
+            "Visitor Name",
+            "Visitor Phone",
+            "Host ID",
+            "Host Name",
+            "Purpose",
+            "Department",
+            "Scheduled Start",
+            "Scheduled End",
+            "Status",
+            "Approval Notes",
+            "Rejection Reason",
+            "Cancellation Reason",
+            "Created At"
+        ])
+
+        for req in requests:
+            visitor_name = f"{req.visitor.first_name} {req.visitor.last_name}" if req.visitor else ""
+            visitor_phone = req.visitor.phone if req.visitor else ""
+            host_name = f"{req.host.first_name} {req.host.last_name}" if req.host else ""
+
+            writer.writerow([
+                req.id,
+                req.request_code,
+                req.tenant_id,
+                req.visitor_id,
+                visitor_name,
+                visitor_phone,
+                req.host_id,
+                host_name,
+                req.purpose,
+                req.department or "",
+                req.scheduled_start_time.strftime("%Y-%m-%d %H:%M:%S") if req.scheduled_start_time else "",
+                req.scheduled_end_time.strftime("%Y-%m-%d %H:%M:%S") if req.scheduled_end_time else "",
+                req.status.value if req.status else "",
+                req.approval_notes or "",
+                req.rejection_reason or "",
+                req.cancellation_reason or "",
+                req.created_at.strftime("%Y-%m-%d %H:%M:%S") if req.created_at else ""
+            ])
+
+        return output.getvalue()
+
+    @staticmethod
     def export_visitors_excel(visitors: List[Visitor]) -> bytes:
         """
         Hook for future Excel format export (.xlsx).
@@ -103,3 +158,4 @@ class ExportService:
         Hook for future PDF format export (.pdf).
         """
         raise NotImplementedError("PDF export renderer is scheduled for upcoming release.")
+

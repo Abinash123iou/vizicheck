@@ -7,6 +7,8 @@ from app.models.user import User
 from app.models.audit_log import AuditLog
 from app.models.visitor import Visitor, VisitorStatus, VerificationStatus, VerificationMethod
 from app.models.visit_request import VisitRequest, VisitRequestStatus
+from app.models.visitor_pass import VisitorPass, PassStatus, PassStatusHistory
+from app.models.qr_token import QRToken
 
 __all__ = [
     "Role",
@@ -22,6 +24,10 @@ __all__ = [
     "VerificationStatus",
     "VerificationMethod",
     "VisitRequest",
-    "VisitRequestStatus"
+    "VisitRequestStatus",
+    "VisitorPass",
+    "PassStatus",
+    "PassStatusHistory",
+    "QRToken"
 ]
 

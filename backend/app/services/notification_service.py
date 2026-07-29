@@ -72,3 +72,49 @@ class NotificationService:
         """
         logger.info(f"[Notification Hook] Direct Security Notification (Tenant ID={tenant_id}): {message}")
         return True
+
+    # --- Visitor Pass & QR Event Notification Hooks ---
+
+    @classmethod
+    def notify_pass_generated(cls, visitor_pass) -> bool:
+        """
+        Trigger notification hook when a Visitor Pass is generated.
+        """
+        logger.info(
+            f"[Notification Hook] PASS_GENERATED: Code={visitor_pass.pass_code}, "
+            f"Visitor ID={visitor_pass.visitor_id}, Valid Until={visitor_pass.valid_until}"
+        )
+        return True
+
+    @classmethod
+    def notify_pass_revoked(cls, visitor_pass) -> bool:
+        """
+        Trigger notification hook when a Visitor Pass is revoked.
+        """
+        logger.info(
+            f"[Notification Hook] PASS_REVOKED: Code={visitor_pass.pass_code}, "
+            f"Reason='{visitor_pass.revocation_reason}'"
+        )
+        return True
+
+    @classmethod
+    def notify_pass_expired(cls, visitor_pass) -> bool:
+        """
+        Trigger notification hook when a Visitor Pass expires automatically.
+        """
+        logger.info(
+            f"[Notification Hook] PASS_EXPIRED: Code={visitor_pass.pass_code}, "
+            f"Visitor ID={visitor_pass.visitor_id}"
+        )
+        return True
+
+    @classmethod
+    def notify_qr_regenerated(cls, visitor_pass, new_version: int) -> bool:
+        """
+        Trigger notification hook when a QR code is regenerated.
+        """
+        logger.info(
+            f"[Notification Hook] QR_REGENERATED: Code={visitor_pass.pass_code}, "
+            f"New Version={new_version}"
+        )
+        return True

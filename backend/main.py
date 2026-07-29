@@ -15,6 +15,7 @@ from app.api.routes.profile import router as profile_router
 from app.api.routes.tenants import router as tenants_router
 from app.api.routes.visitors import router as visitors_router
 from app.api.routes.requests import router as requests_router
+from app.api.routes.passes import router as passes_router
 from app.utils.logger import get_logger
 
 # Initialize logger
@@ -97,6 +98,7 @@ app.include_router(profile_router, prefix=settings.API_V1_STR)
 app.include_router(tenants_router, prefix=settings.API_V1_STR)
 app.include_router(visitors_router, prefix=settings.API_V1_STR)
 app.include_router(requests_router, prefix=settings.API_V1_STR)
+app.include_router(passes_router, prefix=settings.API_V1_STR)
 
 
 

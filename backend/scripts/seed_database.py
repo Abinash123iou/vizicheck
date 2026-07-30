@@ -60,10 +60,16 @@ PERMISSIONS = [
     {"code": "PASS_REVOKE", "name": "Revoke Pass", "description": "Revoke active visitor passes"},
     # QR Verification
     {"code": "QR_VALIDATE", "name": "Validate QR Code", "description": "Scan and validate visitor QR pass"},
-    # Check-In
-    {"code": "CHECKIN_CREATE", "name": "Check-in Visitor", "description": "Record visitor entry"},
-    # Check-Out
-    {"code": "CHECKOUT_CREATE", "name": "Check-out Visitor", "description": "Record visitor exit"},
+    # Gate Security & Check-In
+    {"code": "CHECKIN_CREATE", "name": "Check-in Visitor", "description": "Record visitor entry via QR scan"},
+    {"code": "CHECKIN_READ", "name": "View Check-in Records", "description": "View check-in/out event history"},
+    {"code": "CHECKIN_MANUAL", "name": "Manual Check-in", "description": "Perform manual check-in override"},
+    {"code": "CHECKOUT_CREATE", "name": "Check-out Visitor", "description": "Record visitor exit via QR scan"},
+    {"code": "CHECKOUT_MANUAL", "name": "Manual Check-out", "description": "Perform manual check-out override"},
+    {"code": "CHECKIN_UNDO", "name": "Undo Check-in", "description": "Revert visitor check-in state"},
+    {"code": "CHECKIN_EXPORT", "name": "Export Check-in Records", "description": "Export check-in logs to CSV"},
+    {"code": "GATE_DASHBOARD_VIEW", "name": "View Gate Dashboard", "description": "Access live gate occupancy dashboard"},
+    {"code": "SCAN_LOGS_VIEW", "name": "View Scan Analytics", "description": "View QR scan failure & success logs"},
     # Reports
     {"code": "REPORT_VIEW", "name": "View Reports", "description": "View analytics and dashboard metrics"},
     {"code": "REPORT_EXPORT", "name": "Export Reports", "description": "Export reports to PDF or Excel"},
@@ -85,6 +91,15 @@ ROLE_PERMISSIONS = {
         "AVAILABILITY_VIEW",
         "AVAILABILITY_UPDATE",
         "AVAILABILITY_DELETE",
+        "CHECKIN_CREATE",
+        "CHECKIN_READ",
+        "CHECKIN_MANUAL",
+        "CHECKOUT_CREATE",
+        "CHECKOUT_MANUAL",
+        "CHECKIN_UNDO",
+        "CHECKIN_EXPORT",
+        "GATE_DASHBOARD_VIEW",
+        "SCAN_LOGS_VIEW",
         "REPORT_VIEW",
         "NOTIFICATION_VIEW",
     ],
@@ -93,7 +108,13 @@ ROLE_PERMISSIONS = {
         "PASS_VIEW",
         "QR_VALIDATE",
         "CHECKIN_CREATE",
+        "CHECKIN_READ",
+        "CHECKIN_MANUAL",
         "CHECKOUT_CREATE",
+        "CHECKOUT_MANUAL",
+        "CHECKIN_EXPORT",
+        "GATE_DASHBOARD_VIEW",
+        "SCAN_LOGS_VIEW",
         "REPORT_VIEW",
         "NOTIFICATION_VIEW",
     ],
@@ -106,6 +127,7 @@ ROLE_PERMISSIONS = {
         "NOTIFICATION_VIEW",
     ],
 }
+
 
 def seed():
     db: Session = SessionLocal()

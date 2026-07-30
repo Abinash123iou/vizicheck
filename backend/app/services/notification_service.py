@@ -118,3 +118,64 @@ class NotificationService:
             f"New Version={new_version}"
         )
         return True
+
+    # --- Gate Security & Check-In/Out Notification Hooks ---
+
+    @classmethod
+    def notify_host_checkin(cls, checkin, visitor_pass, host) -> bool:
+        """
+        Notify host employee when their visitor checks in at the gate.
+        """
+        host_id = host.id if host else checkin.host_id
+        logger.info(
+            f"[Notification Hook] HOST_CHECKIN_ALERT: Host ID={host_id}, "
+            f"Pass={visitor_pass.pass_code if visitor_pass else checkin.pass_id}, "
+            f"Gate={checkin.gate_name}, CheckInTime={checkin.checkin_time}"
+        )
+        return True
+
+    @classmethod
+    def notify_host_checkout(cls, checkin, visitor_pass, host) -> bool:
+        """
+        Notify host employee when their visitor checks out.
+        """
+        host_id = host.id if host else checkin.host_id
+        logger.info(
+            f"[Notification Hook] HOST_CHECKOUT_ALERT: Host ID={host_id}, "
+            f"Pass={visitor_pass.pass_code if visitor_pass else checkin.pass_id}, "
+            f"DurationMinutes={checkin.visit_duration_minutes}"
+        )
+        return True
+
+    @classmethod
+    def notify_security_alert(cls, tenant_id: int, alert_type: str, message: str, details: Optional[str] = None) -> bool:
+        """
+        Dispatch security alert to gate officers and tenant administrators.
+        """
+        logger.warning(
+            f"[Notification Hook] SECURITY_ALERT (Tenant ID={tenant_id}): [{alert_type}] {message} | Details: {details}"
+        )
+        return True
+
+    @classmethod
+    def notify_overstay(cls, checkin, visitor_pass, host) -> bool:
+        """
+        Notify host and security when a visitor has exceeded their scheduled visit duration.
+        """
+        logger.warning(
+            f"[Notification Hook] VISITOR_OVERSTAY_ALERT: CheckIn ID={checkin.id}, "
+            f"Visitor ID={checkin.visitor_id}, Host ID={checkin.host_id}"
+        )
+        return True
+
+    @classmethod
+    def notify_manual_override(cls, checkin, performed_by, reason: str) -> bool:
+        """
+        Notify security administrator when a manual check-in/out override occurs.
+        """
+        logger.info(
+            f"[Notification Hook] MANUAL_OVERRIDE_ALERT: CheckIn ID={checkin.id}, "
+            f"PerformedBy={performed_by.id if performed_by else 'System'}, Reason='{reason}'"
+        )
+        return True
+

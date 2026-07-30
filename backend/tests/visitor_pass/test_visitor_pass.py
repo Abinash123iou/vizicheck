@@ -1,13 +1,34 @@
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
+import pytest
+from database.session import SessionLocal, engine
+from database.base import Base
 
-from database.session import SessionLocal
+import app.models  # Ensure all SQLAlchemy models are registered
 from app.models.tenant import Tenant, TenantStatus
 from app.models.user import User
 from app.models.role import Role
 from app.models.visitor import Visitor
 from app.models.visit_request import VisitRequest, VisitRequestStatus
 from app.models.visitor_pass import VisitorPass, PassStatus
+from app.models.checkin import CheckIn, ScanLog, GateEventHistory
+
+
+@pytest.fixture(autouse=True, scope="function")
+def cleanup_passes():
+    """Ensure clean database state for pass tests."""
+    Base.metadata.create_all(bind=engine)
+    db: Session = SessionLocal()
+    try:
+        db.query(ScanLog).delete()
+        db.query(GateEventHistory).delete()
+        db.query(CheckIn).delete()
+        db.query(VisitorPass).delete()
+        db.query(VisitRequest).delete()
+        db.commit()
+    finally:
+        db.close()
+
 from app.schemas.pass_schema import GeneratePassRequest, RevokePassRequest, UpdatePassRequest
 from app.services.pass_service import PassService
 from app.services.qr_service import QRService
@@ -15,7 +36,17 @@ from app.core.exceptions import ConflictException, ValidationException
 from background_jobs.pass_expiration_scheduler import run_pass_expiration_check
 
 
-def get_super_admin_user(db: Session):
+@pytest.fixture
+def db():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+@pytest.fixture
+def super_admin_user(db: Session):
     role = db.query(Role).filter_by(name="SUPER_ADMIN").first()
     user = db.query(User).filter_by(email="admin@vizicheck.com").first()
     if not user:
@@ -33,7 +64,8 @@ def get_super_admin_user(db: Session):
     return user
 
 
-def get_sample_tenant(db: Session):
+@pytest.fixture
+def sample_tenant(db: Session):
     tenant = db.query(Tenant).filter_by(code="TEN-TESTPASS").first()
     if not tenant:
         tenant = Tenant(
@@ -50,7 +82,8 @@ def get_sample_tenant(db: Session):
     return tenant
 
 
-def get_approved_visit_request(db: Session, sample_tenant: Tenant, super_admin_user: User):
+@pytest.fixture
+def approved_visit_request(db: Session, sample_tenant: Tenant, super_admin_user: User):
     visitor = db.query(Visitor).filter_by(email="pass.visitor@example.com").first()
     if not visitor:
         visitor = Visitor(
@@ -84,6 +117,7 @@ def get_approved_visit_request(db: Session, sample_tenant: Tenant, super_admin_u
     return req
 
 
+
 def test_generate_pass_code_and_jwt_claims(db: Session, super_admin_user: User, approved_visit_request: VisitRequest):
     """
     Test pass generation: code format, active status, JWT claims breakdown.
@@ -111,6 +145,15 @@ def test_prevent_duplicate_pass_generation(db: Session, super_admin_user: User, 
     """
     Test duplicate pass generation returns 409 Conflict.
     """
+    # First generation
+    PassService.generate_pass(
+        db=db,
+        current_user=super_admin_user,
+        visit_request_id=approved_visit_request.id,
+        request_data=GeneratePassRequest(tenant_id=approved_visit_request.tenant_id)
+    )
+
+    # Second generation should raise ConflictException
     caught = False
     try:
         PassService.generate_pass(
@@ -131,8 +174,12 @@ def test_qr_token_regeneration(db: Session, super_admin_user: User, approved_vis
     """
     Test QR regeneration increments version and deactivates old token.
     """
-    pass_entity = db.query(VisitorPass).filter_by(visit_request_id=approved_visit_request.id).first()
-    pass_dto = PassService.get_pass_by_id(db, super_admin_user, pass_id=pass_entity.id)
+    pass_dto = PassService.generate_pass(
+        db=db,
+        current_user=super_admin_user,
+        visit_request_id=approved_visit_request.id,
+        request_data=GeneratePassRequest(tenant_id=approved_visit_request.tenant_id)
+    )
     
     new_qr = PassService.regenerate_qr_token(db, super_admin_user, pass_id=pass_dto.id)
 
@@ -147,12 +194,17 @@ def test_revoke_pass(db: Session, super_admin_user: User, approved_visit_request
     """
     Test pass revocation transitions status to REVOKED and deactivates QR tokens.
     """
-    pass_entity = db.query(VisitorPass).filter_by(visit_request_id=approved_visit_request.id).first()
+    pass_dto = PassService.generate_pass(
+        db=db,
+        current_user=super_admin_user,
+        visit_request_id=approved_visit_request.id,
+        request_data=GeneratePassRequest(tenant_id=approved_visit_request.tenant_id)
+    )
     
     revoked_dto = PassService.revoke_pass(
         db=db,
         current_user=super_admin_user,
-        pass_id=pass_entity.id,
+        pass_id=pass_dto.id,
         revocation_data=RevokePassRequest(revocation_reason="Security Concern")
     )
 
@@ -160,6 +212,7 @@ def test_revoke_pass(db: Session, super_admin_user: User, approved_visit_request
     assert revoked_dto.revocation_reason == "Security Concern"
     assert len(revoked_dto.status_history) >= 2
     assert revoked_dto.status_history[-1].new_status == PassStatus.REVOKED
+
 
 
 def test_pass_expiration_background_scheduler(db: Session, sample_tenant: Tenant, super_admin_user: User):

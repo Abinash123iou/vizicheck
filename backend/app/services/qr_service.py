@@ -32,7 +32,8 @@ class QRService:
         Returns tuple of (jwt_string, decoded_claims, base64_qr_placeholder).
         """
         iat = int(datetime.now(timezone.utc).timestamp())
-        exp = int(expires_at.replace(tzinfo=timezone.utc).timestamp()) if expires_at.tzinfo else int(expires_at.timestamp())
+        exp = int(expires_at.timestamp()) if expires_at.tzinfo else int(expires_at.replace(tzinfo=timezone.utc).timestamp())
+
 
         claims = {
             "sub": visitor_pass.uuid,

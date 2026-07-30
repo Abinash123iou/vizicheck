@@ -18,6 +18,8 @@ from app.models.user import User
 from app.models.role import Role
 from app.models.visitor import Visitor, VisitorStatus
 from app.models.visit_request import VisitRequest, VisitRequestStatus
+from app.models.visitor_pass import VisitorPass
+from app.models.checkin import CheckIn, ScanLog, GateEventHistory
 
 client = TestClient(fastapi_app)
 
@@ -28,10 +30,15 @@ def cleanup_visit_requests():
     Base.metadata.create_all(bind=engine)
     db: Session = SessionLocal()
     try:
+        db.query(ScanLog).delete()
+        db.query(GateEventHistory).delete()
+        db.query(CheckIn).delete()
+        db.query(VisitorPass).delete()
         db.query(VisitRequest).delete()
         db.commit()
     finally:
         db.close()
+
 
 
 def get_super_admin_token() -> str:

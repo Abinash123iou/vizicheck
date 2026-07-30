@@ -28,7 +28,20 @@ class PassValidator:
         Verify tenant access boundary based on user role and ensure tenant is active.
         """
         if current_user.role and current_user.role.name == SystemRoles.SUPER_ADMIN:
-            target_tenant_id = request_tenant_id or current_user.tenant_id or 1
+            if request_tenant_id:
+                target_tenant_id = request_tenant_id
+            elif current_user.tenant_id:
+                target_tenant_id = current_user.tenant_id
+            elif db is not None:
+                active_tenant = db.query(Tenant).filter(Tenant.status == TenantStatus.ACTIVE).first()
+                if not active_tenant:
+                    active_tenant = db.query(Tenant).first()
+                if active_tenant:
+                    target_tenant_id = active_tenant.id
+                else:
+                    raise NotFoundException("No tenant organization exists in database. Please create a tenant first.")
+            else:
+                target_tenant_id = 1
         else:
             if not current_user.tenant_id:
                 raise AuthorizationException("Authenticated user is not assigned to any tenant organization")
@@ -44,6 +57,7 @@ class PassValidator:
                 raise ValidationException(f"Tenant organization '{tenant.name}' is not ACTIVE")
 
         return target_tenant_id
+
 
     @classmethod
     def validate_visit_request_for_pass(cls, db: Session, visit_request_id: int, tenant_id: int) -> VisitRequest:

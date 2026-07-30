@@ -1,0 +1,705 @@
+{
+	"info": {
+		"_postman_id": "a9b8c7d6-e5f4-4a3b-2c1d-0e9f8a7b6c5d",
+		"name": "ViziCheck API Testing Suite",
+		"description": "Production-grade automated Postman test collection for ViziCheck Multi-Tenant Visitor Management System.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Login (Super Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response time is under 500ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"pm.test('Response has valid envelope', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"    pm.expect(jsonData.data).to.have.property('access_token');",
+									"    pm.environment.set('access_token', jsonData.data.access_token);",
+									"    if (jsonData.data.refresh_token) {",
+									"        pm.environment.set('refresh_token', jsonData.data.refresh_token);",
+									"    }",
+									"    if (jsonData.data.user) {",
+									"        pm.environment.set('user_id', jsonData.data.user.id);",
+									"        if (jsonData.data.user.tenant_id) {",
+									"            pm.environment.set('tenant_id', jsonData.data.user.tenant_id);",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@vizicheck.com\",\n  \"password\": \"TestPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User Profile (/auth/me)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returns authenticated user profile', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"    pm.expect(jsonData.data).to.have.property('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "me"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returns new access token', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('access_token');",
+									"    pm.environment.set('access_token', jsonData.data.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "refresh"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Tenants",
+			"item": [
+				{
+					"name": "Create Tenant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Saves created tenant_id', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.environment.set('tenant_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Infosys Technology Center\",\n  \"slug\": \"infosys-tech-center\",\n  \"code\": \"TEN-INFOSYS\",\n  \"contact_person\": \"Narayana Murthy\",\n  \"contact_email\": \"contact@infosys-tech.com\",\n  \"contact_phone\": \"+918028520261\",\n  \"description\": \"Infosys SEZ Campus, Electronic City, Bengaluru\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "List Tenants (Paginated & Filtered)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returns list of tenant organizations', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants?page=1&page_size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "page_size", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Tenant By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/{{tenant_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "{{tenant_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Users",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Saves created host_id', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('host_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Amit\",\n  \"last_name\": \"Shah\",\n  \"email\": \"amit.shah@capnis-infotech.com\",\n  \"password\": \"TestPassword123!\",\n  \"role_id\": 1,\n  \"tenant_id\": {{tenant_id}},\n  \"phone\": \"+919898989898\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users"]
+						}
+					}
+				},
+				{
+					"name": "List Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/v1/users?tenant_id={{tenant_id}}&page=1&page_size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users"],
+							"query": [
+								{ "key": "tenant_id", "value": "{{tenant_id}}" },
+								{ "key": "page", "value": "1" },
+								{ "key": "page_size", "value": "10" }
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Visitors",
+			"item": [
+				{
+					"name": "Create Visitor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Saves created visitor_id', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('visitor_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tenant_id\": {{tenant_id}},\n  \"first_name\": \"Arjun\",\n  \"last_name\": \"Kapoor\",\n  \"email\": \"arjun.kapoor@techmah.com\",\n  \"phone\": \"+919811223344\",\n  \"company\": \"Tech Mahindra\",\n  \"government_id_type\": \"PAN\",\n  \"government_id_number\": \"ABCDE1234F\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/visitors",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "visitors"]
+						}
+					}
+				},
+				{
+					"name": "List Visitors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/v1/visitors?tenant_id={{tenant_id}}&page=1&page_size=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "visitors"],
+							"query": [
+								{ "key": "tenant_id", "value": "{{tenant_id}}" },
+								{ "key": "page", "value": "1" },
+								{ "key": "page_size", "value": "10" }
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Visit Requests",
+			"item": [
+				{
+					"name": "Create Visit Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Saves visit_request_id', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('visit_request_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tenant_id\": {{tenant_id}},\n  \"visitor_id\": {{visitor_id}},\n  \"host_id\": {{host_id}},\n  \"purpose\": \"Architecture Planning Meeting\",\n  \"department\": \"Engineering\",\n  \"scheduled_start_time\": \"2026-07-30T22:00:00Z\",\n  \"scheduled_end_time\": \"2026-07-31T06:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/requests",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "requests"]
+						}
+					}
+				},
+				{
+					"name": "Approve Visit Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Visit Request status updated to APPROVED', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.status).to.eql('APPROVED');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "PATCH",
+						"url": {
+							"raw": "{{base_url}}/api/v1/requests/{{visit_request_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "requests", "{{visit_request_id}}", "approve"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Visitor Passes",
+			"item": [
+				{
+					"name": "Generate Visitor Pass",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Saves pass_id and active qr_token', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('pass_id', jsonData.data.id);",
+									"    pm.environment.set('pass_code', jsonData.data.pass_code);",
+									"    if (jsonData.data.active_qr && jsonData.data.active_qr.token) {",
+									"        pm.environment.set('qr_token', jsonData.data.active_qr.token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tenant_id\": {{tenant_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/passes/generate/{{visit_request_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "passes", "generate", "{{visit_request_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Regenerate QR Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returns new active QR Token', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('token');",
+									"    pm.environment.set('qr_token', jsonData.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"url": {
+							"raw": "{{base_url}}/api/v1/passes/{{pass_id}}/regenerate-qr",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "passes", "{{pass_id}}", "regenerate-qr"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Gate Security & Check-Ins",
+			"item": [
+				{
+					"name": "QR Entry Check-In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201 Created', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Check-in status is CHECKED_IN', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.status).to.eql('CHECKED_IN');",
+									"    pm.environment.set('checkin_id', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"qr_token\": \"{{qr_token}}\",\n  \"device_meta\": {\n    \"gate_device_id\": \"DEV-GATE-NORTH-01\",\n    \"scanner_name\": \"North Gate Scanner\",\n    \"gate_name\": \"North Gate\"\n  },\n  \"notes\": \"Verified visitor badge\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/checkin/scan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "checkin", "scan"]
+						}
+					}
+				},
+				{
+					"name": "QR Exit Check-Out",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Check-out status is CHECKED_OUT', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.status).to.eql('CHECKED_OUT');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"qr_token\": \"{{qr_token}}\",\n  \"device_meta\": {\n    \"gate_device_id\": \"DEV-GATE-NORTH-01\",\n    \"gate_name\": \"North Gate Exit\"\n  },\n  \"notes\": \"Badge surrendered at exit\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/checkout/scan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "checkout", "scan"]
+						}
+					}
+				},
+				{
+					"name": "Live Security Dashboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Returns occupancy dashboard metrics', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('visitors_inside');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/v1/checkins/live-dashboard?tenant_id={{tenant_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "checkins", "live-dashboard"],
+							"query": [ { "key": "tenant_id", "value": "{{tenant_id}}" } ]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "8. Negative Test Cases",
+			"item": [
+				{
+					"name": "Invalid Login Credentials (401)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401 Unauthorized', function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@vizicheck.com\",\n  \"password\": \"WrongPassword!!!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Duplicate User Email (409)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 409 Conflict', function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Duplicate\",\n  \"last_name\": \"User\",\n  \"email\": \"admin@vizicheck.com\",\n  \"password\": \"TestPassword123!\",\n  \"role_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users"]
+						}
+					}
+				},
+				{
+					"name": "Invalid QR Token Scan (400/404)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 or 404', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"qr_token\": \"VIZICHECK:PASS:00000000-0000-0000-0000-000000000000:V1:invalidJwtToken\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/checkin/scan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "checkin", "scan"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

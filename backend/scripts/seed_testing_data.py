@@ -20,8 +20,10 @@ from app.models.visit_request import VisitRequest, VisitRequestStatus
 from app.models.visitor_pass import VisitorPass, PassStatus
 from app.models.qr_token import QRToken
 from app.models.checkin import CheckIn, CheckInStatus, ScanLog, GateEventHistory, GateVerificationStatus
+from app.models.availability import HostAvailability, AvailabilityException, Weekday, RecurrenceType, ExceptionType
 from app.core.password import hash_password
 from app.services.qr_service import QRService
+
 
 
 def seed_testing_data():
@@ -138,7 +140,29 @@ def seed_testing_data():
 
             host_user = tenant_users[1]
 
+            # Seed Host Availability (Mon - Fri 09:00 - 17:00 with lunch break 13:00 - 14:00)
+            from datetime import time as dtime
+            for wday in [Weekday.MONDAY, Weekday.TUESDAY, Weekday.WEDNESDAY, Weekday.THURSDAY, Weekday.FRIDAY]:
+                exist_sched = db.query(HostAvailability).filter_by(tenant_id=tenant.id, user_id=host_user.id, weekday=wday, is_deleted=False).first()
+                if not exist_sched:
+                    sched = HostAvailability(
+                        tenant_id=tenant.id,
+                        user_id=host_user.id,
+                        weekday=wday,
+                        start_time=dtime(9, 0, 0),
+                        end_time=dtime(17, 0, 0),
+                        break_start=dtime(13, 0, 0),
+                        break_end=dtime(14, 0, 0),
+                        max_visitors=5,
+                        is_available=True,
+                        recurrence_type=RecurrenceType.WEEKLY,
+                        notes="Standard Enterprise Working Hours"
+                    )
+                    db.add(sched)
+                    db.commit()
+
             # Seed 20 Visitors per Tenant
+
             visitors = []
             visitor_companies = ["Infosys Ltd", "Wipro Digital", "Reliance Jio", "HCL Tech", "Tech Mahindra"]
             for i in range(1, 21):

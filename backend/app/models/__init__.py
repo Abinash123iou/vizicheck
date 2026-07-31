@@ -9,7 +9,7 @@ from app.models.visitor import Visitor, VisitorStatus, VerificationStatus, Verif
 from app.models.visit_request import VisitRequest, VisitRequestStatus
 from app.models.visitor_pass import VisitorPass, PassStatus, PassStatusHistory
 from app.models.qr_token import QRToken
-from app.models.checkin import CheckIn, ScanLog, GateEventHistory, CheckInStatus, GateVerificationStatus
+from app.models.availability import HostAvailability, AvailabilityException, Weekday, RecurrenceType, ExceptionType
 
 __all__ = [
     "Role",
@@ -34,7 +34,13 @@ __all__ = [
     "ScanLog",
     "GateEventHistory",
     "CheckInStatus",
-    "GateVerificationStatus"
+    "GateVerificationStatus",
+    "HostAvailability",
+    "AvailabilityException",
+    "Weekday",
+    "RecurrenceType",
+    "ExceptionType"
 ]
+
 
 

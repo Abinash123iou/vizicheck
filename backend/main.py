@@ -17,7 +17,12 @@ from app.api.routes.visitors import router as visitors_router
 from app.api.routes.requests import router as requests_router
 from app.api.routes.passes import router as passes_router
 from app.api.routes.checkins import router as checkins_router
+from app.api.routes.availability import router as availability_router
+
+
+
 from app.utils.logger import get_logger
+
 
 
 # Initialize logger
@@ -102,6 +107,9 @@ app.include_router(visitors_router, prefix=settings.API_V1_STR)
 app.include_router(requests_router, prefix=settings.API_V1_STR)
 app.include_router(passes_router, prefix=settings.API_V1_STR)
 app.include_router(checkins_router, prefix=settings.API_V1_STR)
+app.include_router(availability_router, prefix=settings.API_V1_STR)
+
+
 
 
 

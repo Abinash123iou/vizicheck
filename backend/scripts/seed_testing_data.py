@@ -21,8 +21,10 @@ from app.models.visitor_pass import VisitorPass, PassStatus
 from app.models.qr_token import QRToken
 from app.models.checkin import CheckIn, CheckInStatus, ScanLog, GateEventHistory, GateVerificationStatus
 from app.models.availability import HostAvailability, AvailabilityException, Weekday, RecurrenceType, ExceptionType
+from app.models.approval import Approval, ApprovalHistory, ApprovalStatus, ApprovalAction, ApprovalType
 from app.core.password import hash_password
 from app.services.qr_service import QRService
+
 
 
 
@@ -220,7 +222,47 @@ def seed_testing_data():
                     db.add(vr)
                     db.commit()
                     db.refresh(vr)
+
+                    # Seed Approval Workflow for Visit Request
+                    acode = f"APP-2026-{tenant.code}-{i:04d}"
+                    app_status_map = {
+                        VisitRequestStatus.APPROVED: ApprovalStatus.APPROVED,
+                        VisitRequestStatus.PENDING: ApprovalStatus.PENDING,
+                        VisitRequestStatus.REJECTED: ApprovalStatus.REJECTED
+                    }
+                    app_status = app_status_map.get(vr.status, ApprovalStatus.PENDING)
+                    
+                    approval = Approval(
+                        tenant_id=tenant.id,
+                        request_id=vr.id,
+                        approval_code=acode,
+                        approval_type=ApprovalType.SINGLE_LEVEL,
+                        current_step=1,
+                        total_steps=1,
+                        current_approver_id=host_user.id,
+                        status=app_status,
+                        created_by_id=host_user.id
+                    )
+                    db.add(approval)
+                    db.commit()
+                    db.refresh(approval)
+
+                    # Initial History Log
+                    history = ApprovalHistory(
+                        approval_id=approval.id,
+                        tenant_id=tenant.id,
+                        step_number=1,
+                        actor_id=host_user.id,
+                        action=ApprovalAction.APPROVE if app_status == ApprovalStatus.APPROVED else (ApprovalAction.REJECT if app_status == ApprovalStatus.REJECTED else ApprovalAction.CREATED),
+                        previous_status=ApprovalStatus.PENDING,
+                        new_status=app_status,
+                        comments="Automated seed approval workflow"
+                    )
+                    db.add(history)
+                    db.commit()
+
                 requests.append(vr)
+
 
             # Seed 5 Visitor Passes for Approved Requests
             approved_requests = [r for r in requests if r.status == VisitRequestStatus.APPROVED]

@@ -28,3 +28,8 @@ class User(Base, SoftDeleteMixin):
     tenant: Mapped[Optional["Tenant"]] = relationship(back_populates="users", foreign_keys=[tenant_id])
     audit_logs: Mapped[List["AuditLog"]] = relationship(back_populates="user")
 
+    @property
+    def is_super_admin(self) -> bool:
+        return bool(self.role and self.role.name == "SUPER_ADMIN")
+
+

@@ -10,6 +10,7 @@ from app.models.visit_request import VisitRequest, VisitRequestStatus
 from app.models.visitor_pass import VisitorPass, PassStatus, PassStatusHistory
 from app.models.qr_token import QRToken
 from app.models.availability import HostAvailability, AvailabilityException, Weekday, RecurrenceType, ExceptionType
+from app.models.approval import Approval, ApprovalHistory, ApprovalStatus, ApprovalAction, ApprovalType
 
 __all__ = [
     "Role",
@@ -39,8 +40,14 @@ __all__ = [
     "AvailabilityException",
     "Weekday",
     "RecurrenceType",
-    "ExceptionType"
+    "ExceptionType",
+    "Approval",
+    "ApprovalHistory",
+    "ApprovalStatus",
+    "ApprovalAction",
+    "ApprovalType"
 ]
+
 
 
 

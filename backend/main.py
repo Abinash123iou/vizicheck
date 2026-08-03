@@ -19,6 +19,8 @@ from app.api.routes.passes import router as passes_router
 from app.api.routes.checkins import router as checkins_router
 from app.api.routes.availability import router as availability_router
 from app.api.routes.approvals import router as approvals_router
+from app.api.routes.notifications import router as notifications_router
+
 
 
 
@@ -111,6 +113,8 @@ app.include_router(passes_router, prefix=settings.API_V1_STR)
 app.include_router(checkins_router, prefix=settings.API_V1_STR)
 app.include_router(availability_router, prefix=settings.API_V1_STR)
 app.include_router(approvals_router, prefix=settings.API_V1_STR)
+app.include_router(notifications_router, prefix=settings.API_V1_STR)
+
 
 
 

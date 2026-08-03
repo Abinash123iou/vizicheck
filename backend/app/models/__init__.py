@@ -11,6 +11,7 @@ from app.models.visitor_pass import VisitorPass, PassStatus, PassStatusHistory
 from app.models.qr_token import QRToken
 from app.models.availability import HostAvailability, AvailabilityException, Weekday, RecurrenceType, ExceptionType
 from app.models.approval import Approval, ApprovalHistory, ApprovalStatus, ApprovalAction, ApprovalType
+from app.models.notification import Notification, NotificationTemplate, NotificationPreference
 
 __all__ = [
     "Role",
@@ -45,7 +46,10 @@ __all__ = [
     "ApprovalHistory",
     "ApprovalStatus",
     "ApprovalAction",
-    "ApprovalType"
+    "ApprovalType",
+    "Notification",
+    "NotificationTemplate",
+    "NotificationPreference"
 ]
 
 

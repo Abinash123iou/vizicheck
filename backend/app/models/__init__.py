@@ -12,6 +12,7 @@ from app.models.qr_token import QRToken
 from app.models.availability import HostAvailability, AvailabilityException, Weekday, RecurrenceType, ExceptionType
 from app.models.approval import Approval, ApprovalHistory, ApprovalStatus, ApprovalAction, ApprovalType
 from app.models.notification import Notification, NotificationTemplate, NotificationPreference
+from app.models.security import UserSession, SecurityLog
 
 __all__ = [
     "Role",
@@ -22,6 +23,8 @@ __all__ = [
     "TenantSettings",
     "User",
     "AuditLog",
+    "UserSession",
+    "SecurityLog",
     "Visitor",
     "VisitorStatus",
     "VerificationStatus",

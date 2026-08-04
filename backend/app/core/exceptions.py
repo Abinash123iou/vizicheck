@@ -85,3 +85,11 @@ class ExpiredTokenException(AuthenticationException):
     def __init__(self, message: str = "Authentication token has expired", errors: Optional[List[Any]] = None):
         super().__init__(message, errors=errors)
 
+class AccountLockedException(AuthenticationException):
+    """
+    Exception raised when a user account is locked due to multiple failed login attempts (HTTP 401).
+    """
+    def __init__(self, message: str = "Account is temporarily locked due to multiple failed login attempts", errors: Optional[List[Any]] = None):
+        super().__init__(message, errors=errors)
+
+

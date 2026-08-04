@@ -53,6 +53,13 @@ def get_current_user(
     if payload.get("token_type") != "access":
         raise InvalidTokenException("Invalid token type. Access token required")
 
+    # Check JTI session status if present
+    jti = payload.get("jti")
+    if jti:
+        from app.repositories.security_repository import SecurityRepository
+        session = SecurityRepository.get_session_by_token_jti(db, jti)
+        if session and not session.is_active:
+            raise InvalidTokenException("Session has been revoked")
 
     sub = payload.get("sub")
     if not sub:

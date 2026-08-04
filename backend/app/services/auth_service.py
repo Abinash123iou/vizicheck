@@ -1,3 +1,5 @@
+import uuid
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from config import settings
@@ -18,6 +20,7 @@ from app.core.exceptions import (
 )
 from app.repositories.user_repository import UserRepository
 from app.repositories.auth_repository import AuthRepository
+from app.services.security_service import SecurityService
 from app.schemas.login import LoginRequest, LoginResponseData
 from app.schemas.token import TokenResponseData
 from app.schemas.auth import UserProfileResponse
@@ -33,30 +36,28 @@ class AuthService:
         cls, 
         db: Session, 
         login_data: LoginRequest, 
-        ip_address: Optional[str] = None
+        ip_address: Optional[str] = None,
+        user_agent: Optional[str] = None,
+        device_fingerprint: Optional[str] = None
     ) -> LoginResponseData:
         """
-        Execute user login flow:
-        1. Find user by email
-        2. Verify password
-        3. Verify user active status
-        4. Verify tenant active status
-        5. Generate JWT tokens
-        6. Update last login timestamp
-        7. Record audit log
-        8. Return LoginResponseData DTO
+        Execute user login flow with account lockout check & active session recording.
         """
         user = UserRepository.find_by_email(db, email=login_data.email)
         
+        # Check account lockout if user exists
+        if user:
+            SecurityService.check_account_lockout(db, user)
+
         # Invalid email or password failure
         if not user or not verify_password(login_data.password, user.password_hash):
-            user_id = user.id if user else None
-            AuthRepository.create_audit_log(
+            SecurityService.handle_failed_login(
                 db, 
-                user_id=user_id, 
-                action="LOGIN_FAILED", 
+                user=user, 
+                email=login_data.email, 
                 ip_address=ip_address,
-                new_value={"email": login_data.email, "reason": "Invalid credentials"}
+                user_agent=user_agent,
+                device_fingerprint=device_fingerprint
             )
             raise AuthenticationException("Invalid email or password")
 
@@ -71,18 +72,23 @@ class AuthService:
         if user.role and user.role.permissions:
             permissions = [p.code for p in user.role.permissions]
 
-        # Generate JWT access and refresh tokens
-        access_token, refresh_token = cls.generate_tokens_for_user(user, permissions)
+        # Generate JWT access and refresh tokens with unique JTI
+        token_jti = uuid.uuid4().hex
+        access_token, refresh_token = cls.generate_tokens_for_user(user, permissions, jti=token_jti)
 
         # Update last login timestamp
         UserRepository.update_last_login(db, user_id=user.id)
 
-        # Audit log success
-        AuthRepository.create_audit_log(
-            db, 
-            user_id=user.id, 
-            action="LOGIN_SUCCESS", 
-            ip_address=ip_address
+        # Handle successful login & active session creation
+        expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        SecurityService.handle_successful_login(
+            db,
+            user=user,
+            token_jti=token_jti,
+            expires_at=expires_at,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            device_fingerprint=device_fingerprint
         )
 
         user_profile = cls.build_user_profile(user, permissions)
@@ -188,7 +194,8 @@ class AuthService:
     def generate_tokens_for_user(
         cls, 
         user: User, 
-        permissions: List[str]
+        permissions: List[str],
+        jti: Optional[str] = None
     ) -> tuple[str, str]:
         """
         Helper method to construct token claims and issue JWT pair.
@@ -199,7 +206,8 @@ class AuthService:
             "email": user.email,
             "role": user.role.name if user.role else "VISITOR",
             "tenant_id": user.tenant_id,
-            "permissions": permissions
+            "permissions": permissions,
+            "jti": jti or uuid.uuid4().hex
         }
 
         access_token = create_access_token(data=token_data)

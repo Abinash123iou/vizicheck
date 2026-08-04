@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from main import app
 from config import settings
-from database.session import SessionLocal
+import database.session as db_session
 from app.models.user import User
 from app.models.tenant import Tenant, TenantStatus
 from app.models.role import Role
@@ -106,7 +106,7 @@ def test_disabled_user():
     """
     Test login attempt for inactive user returns HTTP 401.
     """
-    db: Session = SessionLocal()
+    db: Session = db_session.SessionLocal()
     try:
         # Create an inactive user
         role = db.query(Role).filter_by(name="VISITOR").first()
@@ -140,7 +140,7 @@ def test_suspended_tenant_user():
     """
     Test user attached to a suspended tenant organization returns HTTP 403.
     """
-    db: Session = SessionLocal()
+    db: Session = db_session.SessionLocal()
     try:
         # Create suspended tenant
         tenant = Tenant(

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, func
+from sqlalchemy import String, Boolean, DateTime, Integer, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.base import Base
 from app.models.mixins import SoftDeleteMixin
@@ -19,6 +19,8 @@ class User(Base, SoftDeleteMixin):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    locked_until: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False, index=True)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now(), nullable=True)

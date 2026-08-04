@@ -9,6 +9,7 @@ class AuditLog(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    tenant_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True, index=True)
     action: Mapped[str] = mapped_column(String(255), nullable=False)
     module: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     entity_id: Mapped[Optional[int]] = mapped_column(BigInteger, nullable=True)
@@ -19,3 +20,4 @@ class AuditLog(Base):
 
     # Relationships
     user: Mapped[Optional["User"]] = relationship(back_populates="audit_logs")
+    tenant: Mapped[Optional["Tenant"]] = relationship(foreign_keys=[tenant_id])

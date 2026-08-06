@@ -1,5 +1,5 @@
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Request, Query, Response, status
 from sqlalchemy.orm import Session
 
@@ -268,7 +268,7 @@ def export_checkins_csv(
         tenant_id=tenant_id
     )
     csv_content = CheckInService.export_checkins_csv(db=db, current_user=current_user, params=params)
-    filename = f"checkins_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"
+    filename = f"checkins_export_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
 
     return Response(
         content=csv_content,

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from database.session import SessionLocal, engine
 from database.base import Base
@@ -81,13 +81,13 @@ def setup_approved_pass(db: Session, tenant: Tenant, admin: User):
         first_name="GateVisitor",
         last_name="Test",
         email=f"visitor.{uid}@gate.com",
-        phone=f"+1999{int(datetime.utcnow().timestamp()) % 100000}{uid[:4]}",
+        phone=f"+1999{int(datetime.now(timezone.utc).timestamp()) % 100000}{uid[:4]}",
         status=VisitorStatus.ACTIVE
     )
     db.add(visitor)
     db.commit()
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     visit_request = VisitRequest(
         tenant_id=tenant.id,
         request_code=f"REQ-GATE-{uid}",

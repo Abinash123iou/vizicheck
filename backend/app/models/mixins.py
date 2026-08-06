@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy import Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
@@ -14,7 +14,7 @@ class SoftDeleteMixin:
     def delete(self, deleted_at_time: Optional[datetime] = None) -> None:
         """Soft delete the model instance."""
         self.is_deleted = True
-        self.deleted_at = deleted_at_time or datetime.utcnow()
+        self.deleted_at = deleted_at_time or datetime.now(timezone.utc).replace(tzinfo=None)
 
     def restore(self) -> None:
         """Restore a soft-deleted model instance."""

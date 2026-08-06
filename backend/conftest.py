@@ -50,8 +50,12 @@ def setup_test_database():
 
     db = TestSessionLocal()
     try:
-        # Seed Permissions
-        perm_codes = ["USER_CREATE", "USER_READ", "USER_UPDATE", "USER_DELETE", "TENANT_READ", "SECURITY_READ"]
+        # Seed all system permissions
+        from app.constants.permissions import Permissions
+        perm_codes = [
+            getattr(Permissions, attr) for attr in dir(Permissions)
+            if not attr.startswith("__") and isinstance(getattr(Permissions, attr), str)
+        ]
         permissions_objs = []
         for code in perm_codes:
             perm = db.query(Permission).filter_by(code=code).first()
@@ -61,7 +65,7 @@ def setup_test_database():
                 db.flush()
             permissions_objs.append(perm)
 
-        # Seed Roles
+        # Seed Roles with permissions
         roles_data = [
             ("SUPER_ADMIN", "System Super Administrator"),
             ("TENANT_ADMIN", "Tenant Administrator"),
@@ -74,8 +78,7 @@ def setup_test_database():
             role = db.query(Role).filter_by(name=role_name).first()
             if not role:
                 role = Role(name=role_name, description=desc)
-                if role_name == "SUPER_ADMIN":
-                    role.permissions = permissions_objs
+                role.permissions = permissions_objs  # Assign permissions
                 db.add(role)
                 db.flush()
             roles_dict[role_name] = role

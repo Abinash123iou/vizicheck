@@ -1,6 +1,6 @@
 import sys
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 # Ensure backend root is on sys.path
@@ -35,7 +35,7 @@ def run_overdue_checkin_cleanup(db: Optional[Session] = None) -> int:
         if not overdue_checkins:
             return 0
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         flagged_count = 0
 
         for c in overdue_checkins:

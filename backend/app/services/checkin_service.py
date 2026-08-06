@@ -1,6 +1,6 @@
 import csv
 import io
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 
@@ -61,7 +61,7 @@ class CheckInService:
         )
 
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         # Update Pass Status to USED
         old_pass_status = visitor_pass.status
@@ -174,7 +174,7 @@ class CheckInService:
 
 
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         # Update Pass Status to USED
         old_status = visitor_pass.status
@@ -271,7 +271,7 @@ class CheckInService:
         )
 
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         # Calculate Attendance Duration
         duration_td = now - active_checkin.checkin_time
@@ -367,7 +367,7 @@ class CheckInService:
         )
 
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         duration_td = now - active_checkin.checkin_time
         duration_seconds = max(0, int(duration_td.total_seconds()))
         duration_minutes = round(duration_seconds / 60.0, 2)
@@ -587,7 +587,7 @@ class CheckInService:
             db=db, checkin_id=checkin_id, reason=request_data.reason, target_tenant_id=target_tenant_id
         )
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         checkin.is_undone = True
         checkin.status = CheckInStatus.UNDONE
         checkin.undone_by = current_user.id

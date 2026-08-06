@@ -230,12 +230,12 @@ class PassService:
 
         return EnhancedPaginationResponse[PassResponse](
             items=items,
-            total=total_count,
+            total_records=total_count,
             page=params.page,
             page_size=params.page_size,
             total_pages=total_pages,
             has_next=(params.page < total_pages),
-            has_prev=(params.page > 1)
+            has_previous=(params.page > 1)
         )
 
     @classmethod

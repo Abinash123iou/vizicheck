@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Tuple, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, func
@@ -129,7 +129,7 @@ class NotificationRepository:
         entity = cls.find_by_id(db, notification_id, tenant_id=tenant_id)
         if entity:
             entity.status = NotificationStatus.READ.value
-            entity.delivered_at = entity.delivered_at or datetime.utcnow()
+            entity.delivered_at = entity.delivered_at or datetime.now(timezone.utc).replace(tzinfo=None)
             db.add(entity)
             db.commit()
             db.refresh(entity)

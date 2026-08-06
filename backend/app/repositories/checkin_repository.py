@@ -1,4 +1,4 @@
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timezone
 from typing import List, Optional, Tuple, Dict, Any
 from sqlalchemy import func, or_, and_
 from sqlalchemy.orm import Session, joinedload
@@ -32,7 +32,7 @@ class CheckInRepository:
         """
         Update an existing CheckIn record.
         """
-        checkin.updated_at = datetime.utcnow()
+        checkin.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
         db.commit()
         db.refresh(checkin)
         return checkin
@@ -268,7 +268,7 @@ class CheckInRepository:
         ).count()
 
         # Pending exits: visitors checked in whose scheduled_end_time is past or approaching
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         pending_exits = db.query(CheckIn).join(CheckIn.visit_request).filter(
             CheckIn.tenant_id == tenant_id,
             CheckIn.status == CheckInStatus.CHECKED_IN,
@@ -365,7 +365,7 @@ class CheckInRepository:
             scan_result=scan_result,
             reason=reason,
             ip_address=ip_address,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc).replace(tzinfo=None)
         )
         db.add(scan_log)
         db.commit()
@@ -394,7 +394,7 @@ class CheckInRepository:
             performed_by=performed_by,
             gate_device_id=gate_device_id or "DEV-GATE-01",
             details=details,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc).replace(tzinfo=None)
         )
         db.add(event)
         db.commit()
@@ -415,7 +415,7 @@ class CheckInRepository:
         """
         Fetch check-ins where visitor is checked in past scheduled end time.
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         return db.query(CheckIn).join(CheckIn.visit_request).filter(
             CheckIn.status == CheckInStatus.CHECKED_IN,
             VisitRequest.scheduled_end_time <= now,

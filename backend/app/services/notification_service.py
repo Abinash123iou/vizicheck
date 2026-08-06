@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 
@@ -89,7 +89,7 @@ class NotificationService:
                 message = tpl_body
 
         # Construct Notification Entity
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         entity = Notification(
             tenant_id=tenant_id,
             recipient_user_id=request.recipient_user_id,
@@ -117,8 +117,8 @@ class NotificationService:
 
         # Update status to DELIVERED
         created_notification.status = NotificationStatus.DELIVERED.value
-        created_notification.sent_at = datetime.utcnow()
-        created_notification.delivered_at = datetime.utcnow()
+        created_notification.sent_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        created_notification.delivered_at = datetime.now(timezone.utc).replace(tzinfo=None)
         NotificationRepository.update(db, created_notification)
 
         # Audit Log
@@ -200,7 +200,7 @@ class NotificationService:
             raise AuthorizationException("Unauthorized to access this notification.")
 
         entity.status = NotificationStatus.READ.value
-        entity.delivered_at = entity.delivered_at or datetime.utcnow()
+        entity.delivered_at = entity.delivered_at or datetime.now(timezone.utc).replace(tzinfo=None)
         updated_entity = NotificationRepository.update(db, entity)
 
         # Audit log

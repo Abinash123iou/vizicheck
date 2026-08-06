@@ -1,7 +1,7 @@
 import os
 import sys
 import pytest
-from datetime import date, time, datetime, timedelta
+from datetime import date, time, datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -54,7 +54,7 @@ def availability_test_setup(db: Session):
         db.commit()
 
     # 1. Create Tenant
-    uid = datetime.utcnow().strftime("%f")
+    uid = datetime.now(timezone.utc).strftime("%f")
     tenant = Tenant(
         name=f"Avail Test Tenant {uid}",
         slug=f"avail-tenant-{uid}",

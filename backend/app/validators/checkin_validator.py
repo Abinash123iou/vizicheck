@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Tuple, Dict, Any
 from sqlalchemy.orm import Session
 
@@ -209,7 +209,7 @@ class CheckInValidator:
             raise ValidationException(msg)
 
         # Stage 9: Pass Validity Time Window
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         if visitor_pass.valid_until and visitor_pass.valid_until < now:
             msg = f"Visitor Pass '{visitor_pass.pass_code}' expired at {visitor_pass.valid_until}"
             CheckInRepository.log_scan(

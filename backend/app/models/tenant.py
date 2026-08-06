@@ -31,9 +31,9 @@ class Tenant(Base, SoftDeleteMixin):
         default=TenantStatus.ACTIVE, 
         nullable=False
     )
-    created_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    updated_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    deleted_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", use_alter=True, name="fk_tenants_created_by_id", ondelete="SET NULL"), nullable=True)
+    updated_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", use_alter=True, name="fk_tenants_updated_by_id", ondelete="SET NULL"), nullable=True)
+    deleted_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", use_alter=True, name="fk_tenants_deleted_by_id", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), nullable=False)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now(), nullable=True)
 

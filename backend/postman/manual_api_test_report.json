@@ -1,0 +1,905 @@
+{
+  "title": "ViziCheck Sprint 1 Manual API Testing Execution Report",
+  "timestamp": "2026-08-14T16:57:40.722223+00:00",
+  "total_tests": 79,
+  "passed_tests": 79,
+  "failed_tests": 0,
+  "blocked_tests": 0,
+  "overall_status": "PASS",
+  "module_summary": {
+    "HEALTH": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "blocked": 0
+    },
+    "AUTH": {
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "blocked": 0
+    },
+    "USER": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "blocked": 0
+    },
+    "TEN": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "blocked": 0
+    },
+    "VIS": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "blocked": 0
+    },
+    "AVL": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "blocked": 0
+    },
+    "REQ": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "blocked": 0
+    },
+    "APP": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "blocked": 0
+    },
+    "PASS": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "blocked": 0
+    },
+    "CHECKIN": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "blocked": 0
+    },
+    "NOTIF": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "blocked": 0
+    },
+    "SEC": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "blocked": 0
+    },
+    "AUDIT": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "blocked": 0
+    },
+    "REPORT": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "blocked": 0
+    },
+    "NEGATIVE TESTS": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "blocked": 0
+    },
+    "RBAC TESTS": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "blocked": 0
+    },
+    "MULTI-TENANT TESTS": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "blocked": 0
+    }
+  },
+  "test_cases": [
+    {
+      "module": "HEALTH",
+      "name": "System Health Check",
+      "endpoint": "/health",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": "Service & DB healthy"
+    },
+    {
+      "module": "AUTH",
+      "name": "Login super_admin",
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Login tenant_admin_a",
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Login tenant_admin_b",
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Login host_a",
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Login security_a",
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Login reception_a",
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Get Current Profile",
+      "endpoint": "/api/v1/auth/me",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Refresh Access Token",
+      "endpoint": "/api/v1/auth/refresh",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUTH",
+      "name": "Logout User",
+      "endpoint": "/api/v1/auth/logout",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Create User Account",
+      "endpoint": "/api/v1/users",
+      "method": "POST",
+      "expected_status": 201,
+      "actual_status": 201,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "List Users Paginated",
+      "endpoint": "/api/v1/users",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Get System Roles",
+      "endpoint": "/api/v1/users/roles",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Get User By ID",
+      "endpoint": "/api/v1/users/1374",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Update User Details",
+      "endpoint": "/api/v1/users/1391",
+      "method": "PUT",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Deactivate User",
+      "endpoint": "/api/v1/users/1391/deactivate",
+      "method": "PATCH",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Activate User",
+      "endpoint": "/api/v1/users/1391/activate",
+      "method": "PATCH",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Change User Password",
+      "endpoint": "/api/v1/users/change-password",
+      "method": "PATCH",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Get User Profile",
+      "endpoint": "/api/v1/profile",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "USER",
+      "name": "Update User Profile",
+      "endpoint": "/api/v1/profile",
+      "method": "PUT",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "TEN",
+      "name": "List Tenants",
+      "endpoint": "/api/v1/tenants",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "TEN",
+      "name": "Tenant Statistics",
+      "endpoint": "/api/v1/tenants/statistics",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "TEN",
+      "name": "Export Tenants CSV",
+      "endpoint": "/api/v1/tenants/export",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "TEN",
+      "name": "Get Tenant Details",
+      "endpoint": "/api/v1/tenants/373",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "TEN",
+      "name": "Get Tenant Activity Timeline",
+      "endpoint": "/api/v1/tenants/373/activity",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Register New Visitor",
+      "endpoint": "/api/v1/visitors",
+      "method": "POST",
+      "expected_status": 201,
+      "actual_status": 201,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "List Visitors Paginated",
+      "endpoint": "/api/v1/visitors",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Get Visitor Statistics",
+      "endpoint": "/api/v1/visitors/statistics",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Export Visitors CSV",
+      "endpoint": "/api/v1/visitors/export",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Get Visitor By Code",
+      "endpoint": "/api/v1/visitors/code/VIS-TEN-CAPNIS01-000946",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Get Visitor By ID",
+      "endpoint": "/api/v1/visitors/946",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Get Visitor Activity Timeline",
+      "endpoint": "/api/v1/visitors/946/activity",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "VIS",
+      "name": "Verify Visitor Identity",
+      "endpoint": "/api/v1/visitors/946/verify",
+      "method": "PATCH",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AVL",
+      "name": "Calculate Available Host Slots",
+      "endpoint": "/api/v1/availability/slots",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AVL",
+      "name": "List Availability Schedules",
+      "endpoint": "/api/v1/availability",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AVL",
+      "name": "List Availability Exceptions",
+      "endpoint": "/api/v1/availability/exceptions",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Submit Visit Request",
+      "endpoint": "/api/v1/visit-requests",
+      "method": "POST",
+      "expected_status": 201,
+      "actual_status": 201,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "List Visit Requests Paginated",
+      "endpoint": "/api/v1/visit-requests",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Get Visit Request Statistics",
+      "endpoint": "/api/v1/visit-requests/statistics",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Get Pending Requests",
+      "endpoint": "/api/v1/visit-requests/pending",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Get User My Requests",
+      "endpoint": "/api/v1/visit-requests/my-requests",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Get Visit Request Calendar",
+      "endpoint": "/api/v1/visit-requests/calendar",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Export Visit Requests CSV",
+      "endpoint": "/api/v1/visit-requests/export",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REQ",
+      "name": "Approve Visit Request",
+      "endpoint": "/api/v1/visit-requests/716/approve",
+      "method": "PATCH",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "APP",
+      "name": "List Pending Approvals",
+      "endpoint": "/api/v1/approvals/pending",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "APP",
+      "name": "Get Approval Statistics",
+      "endpoint": "/api/v1/approvals/stats",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "PASS",
+      "name": "Generate Visitor Pass",
+      "endpoint": "/api/v1/passes/generate/717",
+      "method": "POST",
+      "expected_status": 201,
+      "actual_status": 201,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "PASS",
+      "name": "List Visitor Passes",
+      "endpoint": "/api/v1/passes",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "PASS",
+      "name": "Get Pass Statistics",
+      "endpoint": "/api/v1/passes/statistics",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "PASS",
+      "name": "Export Visitor Passes CSV",
+      "endpoint": "/api/v1/passes/export",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "PASS",
+      "name": "Regenerate Pass QR Token",
+      "endpoint": "/api/v1/passes/446/regenerate-qr",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "PASS",
+      "name": "Retrieve Pass QR Token",
+      "endpoint": "/api/v1/passes/446/qr",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "CHECKIN",
+      "name": "Scan Visitor Entry QR Check-In",
+      "endpoint": "/api/v1/checkin/scan",
+      "method": "POST",
+      "expected_status": 201,
+      "actual_status": 201,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "CHECKIN",
+      "name": "Live Gate Occupancy Dashboard",
+      "endpoint": "/api/v1/checkins/live-dashboard",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "CHECKIN",
+      "name": "List Gate Check-In Timeline",
+      "endpoint": "/api/v1/checkins",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "CHECKIN",
+      "name": "Get Visitors Currently Inside Facility",
+      "endpoint": "/api/v1/checkins/active",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "CHECKIN",
+      "name": "View Scan Attempt Analytics Logs",
+      "endpoint": "/api/v1/checkins/scan-logs",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "CHECKIN",
+      "name": "Scan Visitor Exit QR Check-Out",
+      "endpoint": "/api/v1/checkout/scan",
+      "method": "POST",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NOTIF",
+      "name": "Dispatch System Notification",
+      "endpoint": "/api/v1/notifications/send",
+      "method": "POST",
+      "expected_status": 201,
+      "actual_status": 201,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NOTIF",
+      "name": "List Notifications History",
+      "endpoint": "/api/v1/notifications",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NOTIF",
+      "name": "Get Notification Statistics",
+      "endpoint": "/api/v1/notifications/statistics",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NOTIF",
+      "name": "Get Notification Preferences",
+      "endpoint": "/api/v1/notifications/preferences",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "SEC",
+      "name": "List Active User Sessions",
+      "endpoint": "/api/v1/security/sessions",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "SEC",
+      "name": "Get Security Activity Logs",
+      "endpoint": "/api/v1/security/activity",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "SEC",
+      "name": "Get Security Dashboard Metrics",
+      "endpoint": "/api/v1/security/dashboard",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUDIT",
+      "name": "List System Audit Logs",
+      "endpoint": "/api/v1/audit",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "AUDIT",
+      "name": "Export Audit Logs CSV",
+      "endpoint": "/api/v1/audit/export",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REPORT",
+      "name": "Get Summary Metrics Report",
+      "endpoint": "/api/v1/reports/summary",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REPORT",
+      "name": "Get Visitor Analytics Report",
+      "endpoint": "/api/v1/reports/visitors",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REPORT",
+      "name": "Get Gate Activity Report",
+      "endpoint": "/api/v1/reports/gate",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "REPORT",
+      "name": "Export Summary Metrics CSV",
+      "endpoint": "/api/v1/reports/export",
+      "method": "GET",
+      "expected_status": 200,
+      "actual_status": 200,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NEGATIVE TESTS",
+      "name": "Missing Authorization Header",
+      "endpoint": "/api/v1/auth/me",
+      "method": "GET",
+      "expected_status": 401,
+      "actual_status": 401,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NEGATIVE TESTS",
+      "name": "Malformed JWT Bearer Token",
+      "endpoint": "/api/v1/auth/me",
+      "method": "GET",
+      "expected_status": 401,
+      "actual_status": 401,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NEGATIVE TESTS",
+      "name": "Non-Existent Visitor Profile ID",
+      "endpoint": "/api/v1/visitors/999999",
+      "method": "GET",
+      "expected_status": 404,
+      "actual_status": 404,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "NEGATIVE TESTS",
+      "name": "Invalid Validation Request Payload",
+      "endpoint": "/api/v1/visitors",
+      "method": "POST",
+      "expected_status": 422,
+      "actual_status": 422,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "RBAC TESTS",
+      "name": "Security Officer Create Tenant Denied",
+      "endpoint": "/api/v1/tenants",
+      "method": "POST",
+      "expected_status": 403,
+      "actual_status": 403,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "RBAC TESTS",
+      "name": "Host User Reset Password Denied",
+      "endpoint": "/api/v1/users/1391/reset-password",
+      "method": "PATCH",
+      "expected_status": 403,
+      "actual_status": 403,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "MULTI-TENANT TESTS",
+      "name": "Cross-Tenant Visitor Read Blocked",
+      "endpoint": "/api/v1/visitors/515",
+      "method": "GET",
+      "expected_status": 404,
+      "actual_status": 403,
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "module": "MULTI-TENANT TESTS",
+      "name": "Cross-Tenant Visit Request Read Blocked",
+      "endpoint": "/api/v1/visit-requests/692",
+      "method": "GET",
+      "expected_status": 404,
+      "actual_status": 404,
+      "status": "PASS",
+      "details": ""
+    }
+  ]
+}

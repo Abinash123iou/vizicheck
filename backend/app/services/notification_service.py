@@ -154,7 +154,7 @@ class NotificationService:
 
         # Non-admin users are restricted to viewing only notifications sent to themselves
         user_id_restrict = None
-        if not is_super_admin and current_user.role and current_user.role.name not in [SystemRoles.TENANT_ADMIN, SystemRoles.SECURITY_GUARD]:
+        if not is_super_admin and current_user.role and current_user.role.name not in [SystemRoles.TENANT_ADMIN, SystemRoles.SECURITY_OFFICER]:
             user_id_restrict = current_user.id
 
         items, total_count = NotificationRepository.list_notifications(

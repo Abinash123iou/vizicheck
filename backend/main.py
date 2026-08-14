@@ -24,6 +24,7 @@ from app.api.routes.approvals import router as approvals_router
 from app.api.routes.notifications import router as notifications_router
 from app.api.routes.security import router as security_router
 from app.api.routes.audit import router as audit_router
+from app.api.routes.reports import router as reports_router
 
 # Initialize logger
 logger = get_logger("main")
@@ -110,6 +111,7 @@ app.include_router(approvals_router, prefix=settings.API_V1_STR)
 app.include_router(notifications_router, prefix=settings.API_V1_STR)
 app.include_router(security_router, prefix=settings.API_V1_STR)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
+app.include_router(reports_router, prefix=settings.API_V1_STR)
 
 @app.get("/health")
 def health_check():

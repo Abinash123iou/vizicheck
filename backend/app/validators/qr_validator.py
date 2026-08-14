@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from app.models.visitor_pass import VisitorPass, PassStatus
 from app.models.qr_token import QRToken
@@ -21,9 +21,9 @@ class QRValidator:
         if not qr_token.is_active:
             raise ValidationException("QR Token has been deactivated or regenerated. Please use the latest QR code.")
 
-        now = datetime.now()
-        exp_naive = qr_token.expires_at.replace(tzinfo=None) if qr_token.expires_at.tzinfo else qr_token.expires_at
-        if exp_naive < now:
+        now = datetime.now(timezone.utc)
+        exp = qr_token.expires_at if qr_token.expires_at.tzinfo else qr_token.expires_at.replace(tzinfo=timezone.utc)
+        if exp < now:
             raise ValidationException("QR Token has expired")
 
     @classmethod

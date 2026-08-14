@@ -41,6 +41,17 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
+@pytest.fixture
+def db_session():
+    """
+    Provide clean database session for test functions/fixtures.
+    """
+    db = TestSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_database():
     """
@@ -71,6 +82,7 @@ def setup_test_database():
             ("TENANT_ADMIN", "Tenant Administrator"),
             ("SECURITY_OFFICER", "Security Officer"),
             ("HOST", "Host Employee"),
+            ("RECEPTIONIST", "Receptionist User"),
             ("VISITOR", "Visitor User")
         ]
         roles_dict = {}
